@@ -1,0 +1,1489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Remote Sale System: Email Drip — Campaign Analytics</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0e1117;
+  --surface: #161b25;
+  --surface-2: #1c2333;
+  --surface-3: #232d40;
+  --border: rgba(255,255,255,0.07);
+  --border-md: rgba(255,255,255,0.13);
+  --text: #e8ecf1;
+  --muted: #7a8899;
+  --faint: #3e4f63;
+  --gold: #e6b84a;
+  --gold-dim: rgba(230,184,74,0.12);
+  --gold-dim2: rgba(230,184,74,0.22);
+  --green: #3ec98e;
+  --green-dim: rgba(62,201,142,0.12);
+  --red: #e05c5c;
+  --red-dim: rgba(224,92,92,0.12);
+  --amber: #e09b4a;
+  --amber-dim: rgba(224,155,74,0.12);
+  --blue: #5b9cf6;
+  --blue-dim: rgba(91,156,246,0.12);
+  --sidebar-w: 220px;
+  --header-h: 52px;
+  --radius: 10px;
+  --radius-sm: 6px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 14px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+
+/* ── LAYOUT ── */
+.layout { display: flex; height: 100vh; overflow: hidden; }
+
+/* ── SIDEBAR ── */
+.sidebar {
+  width: var(--sidebar-w); flex-shrink: 0;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  overflow-y: auto; overflow-x: hidden;
+}
+.sidebar-logo {
+  padding: 20px 18px 14px;
+  border-bottom: 1px solid var(--border);
+}
+.sidebar-logo .wordmark {
+  font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase;
+  color: var(--muted);
+}
+.sidebar-logo .tagline {
+  font-size: 11px; color: var(--faint); margin-top: 3px;
+}
+.sb-section { padding: 10px 10px 4px; }
+.sb-label {
+  font-size: 10px; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--faint); font-weight: 500; padding: 0 8px; margin-bottom: 4px;
+}
+.sb-select-wrap {
+  position: relative; padding: 0 0 4px;
+}
+.sb-select {
+  width: 100%; background: var(--surface-2); border: 1px solid var(--border-md);
+  border-radius: var(--radius-sm); color: var(--text); font-family: 'DM Sans';
+  font-size: 13px; font-weight: 500; padding: 8px 28px 8px 10px;
+  appearance: none; cursor: pointer; outline: none; transition: border-color .15s;
+}
+.sb-select:hover, .sb-select:focus { border-color: var(--gold); }
+.sb-select-wrap::after {
+  content: '▾'; position: absolute; right: 10px; top: 50%; transform: translateY(-60%);
+  color: var(--muted); font-size: 11px; pointer-events: none;
+}
+.sb-divider { height: 1px; background: var(--border); margin: 10px 10px; }
+.sb-nav { padding: 6px 10px 10px; }
+.sb-nav-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 7px 10px; border-radius: var(--radius-sm); cursor: pointer;
+  font-size: 13px; font-weight: 500; color: var(--muted); transition: background .12s, color .12s;
+  user-select: none;
+}
+.sb-nav-item:hover { background: var(--surface-2); color: var(--text); }
+.sb-nav-item.active { background: var(--gold-dim); color: var(--gold); }
+.sb-nav-item svg { flex-shrink: 0; opacity: .7; }
+.sb-nav-item.active svg { opacity: 1; }
+.sb-footer {
+  margin-top: auto; padding: 14px 18px 18px;
+  border-top: 1px solid var(--border);
+  font-size: 11px; color: var(--faint);
+}
+.sb-footer .period-label { font-weight: 500; color: var(--muted); font-size: 12px; margin-bottom: 3px; }
+.sb-footer input {
+  background: transparent; border: none; border-bottom: 1px solid var(--border-md);
+  color: var(--text); font-family: 'DM Sans'; font-size: 12px; font-weight: 500;
+  width: 100%; padding: 3px 0; outline: none;
+}
+.sb-footer input:focus { border-color: var(--gold); }
+
+/* ── MAIN ── */
+.main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+/* Header */
+.topbar {
+  height: var(--header-h); flex-shrink: 0;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 28px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+.topbar-title { font-size: 15px; font-weight: 600; }
+.topbar-title span { color: var(--gold); }
+.topbar-actions { display: flex; gap: 8px; }
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 14px; border-radius: var(--radius-sm); border: 1px solid var(--border-md);
+  background: var(--surface-2); color: var(--muted); font-family: 'DM Sans'; font-size: 12px;
+  font-weight: 500; cursor: pointer; transition: .15s; white-space: nowrap;
+}
+.btn:hover { border-color: var(--border-md); color: var(--text); background: var(--surface-3); }
+.btn.primary { background: var(--gold); border-color: var(--gold); color: #0e1117; }
+.btn.primary:hover { background: #f0c84e; }
+
+/* Tab bar */
+.tabbar {
+  display: flex; align-items: center; gap: 2px;
+  padding: 0 28px; border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+.tab {
+  padding: 12px 16px; font-size: 13px; font-weight: 500; color: var(--muted);
+  border-bottom: 2px solid transparent; cursor: pointer; transition: .15s;
+  white-space: nowrap; user-select: none; margin-bottom: -1px;
+}
+.tab:hover { color: var(--text); }
+.tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+
+/* Content area */
+.content { flex: 1; overflow-y: auto; padding: 28px; }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* ── COMPONENTS ── */
+.hint-bar {
+  display: flex; align-items: center; gap: 10px;
+  background: var(--gold-dim); border: 1px solid var(--gold-dim2);
+  border-radius: var(--radius); padding: 10px 16px; margin-bottom: 24px;
+  font-size: 12px; color: var(--muted);
+}
+.hint-bar strong { color: var(--gold); }
+.hint-bar .hint-actions { margin-left: auto; display: flex; gap: 8px; }
+
+/* Grid */
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 28px; }
+.grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-bottom: 28px; }
+@media(max-width:900px) { .grid-4 { grid-template-columns: repeat(2,1fr); } }
+
+/* KPI cards */
+.card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 20px;
+}
+.card.highlight { border-color: rgba(230,184,74,.35); }
+.card-eyebrow {
+  font-size: 11px; text-transform: uppercase; letter-spacing: .08em;
+  color: var(--muted); font-weight: 500; margin-bottom: 10px; line-height: 1.3;
+}
+.card-value {
+  font-size: 38px; font-weight: 600; line-height: 1; letter-spacing: -.02em;
+  margin-bottom: 6px;
+}
+.card-value .unit { font-size: 18px; font-weight: 400; color: var(--muted); }
+.card-sub { font-size: 11px; color: var(--faint); margin-bottom: 10px; }
+.card-sub b { color: var(--muted); }
+.badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 10px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase;
+  padding: 3px 9px; border-radius: 20px;
+}
+.badge::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+.badge.good { color: var(--green); background: var(--green-dim); }
+.badge.warn { color: var(--amber); background: var(--amber-dim); }
+.badge.bad { color: var(--red); background: var(--red-dim); }
+
+/* Section header */
+.sec-header {
+  display: flex; align-items: center; gap: 12px; margin: 32px 0 16px;
+  font-size: 11px; text-transform: uppercase; letter-spacing: .14em; font-weight: 600; color: var(--text);
+}
+.sec-header::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.sec-header .hint { font-size: 10px; letter-spacing: .08em; color: var(--faint); font-weight: 400; text-transform: none; }
+
+/* Funnel */
+.funnel-row {
+  display: flex; align-items: center; gap: 14px; margin-bottom: 10px;
+}
+.funnel-row:last-child { margin-bottom: 0; }
+.funnel-meta { width: 180px; flex-shrink: 0; }
+.funnel-meta .fn { font-size: 13px; font-weight: 600; }
+.funnel-meta .fs { font-size: 11px; color: var(--faint); margin-top: 1px; }
+.funnel-track { flex: 1; height: 36px; background: var(--surface-2); border-radius: var(--radius-sm); overflow: hidden; }
+.funnel-fill {
+  height: 100%; display: flex; align-items: center; padding: 0 12px;
+  font-size: 14px; font-weight: 600; color: var(--text); border-radius: var(--radius-sm);
+  min-width: 64px; transition: width .5s ease;
+}
+.conv-pct { width: 90px; flex-shrink: 0; text-align: right; }
+.conv-pct .cv { font-size: 16px; font-weight: 600; color: var(--gold); }
+.conv-pct .cl { font-size: 10px; color: var(--faint); text-transform: uppercase; letter-spacing: .06em; margin-top: 1px; }
+.conv-pct.first .cv { color: var(--muted); }
+
+/* Email table */
+.table-wrap { overflow-x: auto; border-radius: var(--radius); border: 1px solid var(--border); }
+table { width: 100%; border-collapse: collapse; min-width: 700px; }
+th {
+  font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--faint);
+  font-weight: 600; text-align: center; padding: 13px 10px 11px;
+  border-bottom: 1px solid var(--border);
+}
+th.left { text-align: left; padding-left: 18px; }
+td { padding: 13px 10px; text-align: center; border-bottom: 1px solid var(--border); font-size: 13px; font-weight: 500; vertical-align: middle; }
+tr:last-child td { border-bottom: none; }
+td.left { text-align: left; padding-left: 18px; }
+.em-day { font-size: 10px; font-weight: 600; color: var(--gold); letter-spacing: .06em; text-transform: uppercase; margin-bottom: 2px; }
+.em-name { font-size: 13px; font-weight: 600; }
+.em-desc { font-size: 11px; color: var(--faint); margin-top: 2px; font-style: italic; }
+input.cell {
+  width: 62px; background: var(--surface-3); border: 1px solid transparent;
+  border-radius: var(--radius-sm); color: var(--text); font-family: 'DM Sans';
+  font-weight: 500; font-size: 13px; text-align: center; padding: 6px 4px; outline: none;
+}
+input.cell:hover { border-color: var(--border-md); }
+input.cell:focus { border-color: var(--gold); background: var(--surface-2); }
+.rate { font-size: 14px; font-weight: 600; }
+.rate small { display: block; font-size: 9px; font-weight: 500; letter-spacing: .06em; text-transform: uppercase; margin-top: 3px; color: var(--faint); }
+.rate.good { color: var(--green); }
+.rate.warn { color: var(--amber); }
+.rate.bad { color: var(--red); }
+tr.totals td { background: rgba(230,184,74,.05); border-top: 1px solid var(--border-md); font-weight: 600; }
+/* not-started rows are fully editable — only status badge changes */
+.status-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 10px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase;
+  padding: 4px 9px; border-radius: 20px; white-space: nowrap;
+}
+.status-badge .dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+.status-active  { color: var(--green); background: var(--green-dim); }
+.status-partial { color: var(--amber); background: var(--amber-dim); }
+.status-none    { color: var(--faint); background: var(--surface-3); }
+
+/* Legend */
+.legend { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+.lg-item {
+  display: flex; align-items: center; gap: 7px; font-size: 11px; color: var(--muted);
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 7px 12px;
+}
+.lg-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+
+/* Guide accordion */
+.guide { margin-top: 28px; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+.guide summary {
+  list-style: none; cursor: pointer; padding: 16px 22px;
+  display: flex; align-items: center; gap: 10px;
+  font-size: 11px; text-transform: uppercase; letter-spacing: .14em; font-weight: 600; color: var(--muted);
+  background: var(--surface); user-select: none;
+}
+.guide summary::-webkit-details-marker { display: none; }
+.guide summary .arrow { color: var(--gold); font-size: 12px; transition: transform .2s; }
+.guide[open] summary .arrow { transform: rotate(90deg); }
+.guide summary .gtag { font-size: 10px; letter-spacing: .08em; color: var(--faint); font-weight: 400; text-transform: none; margin-left: auto; }
+.guide-body { padding: 4px 22px 22px; background: var(--surface); }
+.guide-body h4 { font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--gold); font-weight: 600; margin: 20px 0 10px; }
+.src-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.src-table th { text-align: left; font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--faint); font-weight: 600; padding: 8px 10px; border-bottom: 1px solid var(--border); }
+.src-table td { padding: 10px 10px; border-bottom: 1px solid rgba(255,255,255,.04); color: var(--muted); vertical-align: top; line-height: 1.5; }
+.src-table td b { color: var(--text); font-weight: 500; }
+.src-table code { background: var(--surface-3); color: #a8c0e0; padding: 2px 6px; border-radius: 4px; font-family: 'DM Mono'; font-size: 11px; }
+.steps { counter-reset: s; list-style: none; }
+.steps li { position: relative; padding: 9px 0 9px 38px; color: var(--muted); font-size: 13px; line-height: 1.5; border-bottom: 1px solid var(--border); }
+.steps li:last-child { border-bottom: none; }
+.steps li::before { counter-increment: s; content: counter(s); position: absolute; left: 0; top: 8px; width: 24px; height: 24px; border-radius: 50%; background: var(--gold-dim); color: var(--gold); font-weight: 600; font-size: 11px; display: flex; align-items: center; justify-content: center; }
+.steps li b { color: var(--text); font-weight: 500; }
+.note-box { font-size: 12px; color: var(--muted); font-style: italic; margin-top: 14px; padding: 11px 14px; border-left: 2px solid var(--gold); background: var(--gold-dim); border-radius: 0 var(--radius-sm) var(--radius-sm) 0; line-height: 1.55; }
+
+/* Entry panel */
+.entry-panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px 22px 24px; margin-bottom: 4px; }
+.entry-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+@media(max-width:900px){ .entry-row { grid-template-columns: repeat(2,1fr); } }
+.entry-field { display: flex; flex-direction: column; gap: 8px; }
+.highlight-field { background: var(--gold-dim); border: 1px solid var(--gold-dim2); border-radius: var(--radius-sm); padding: 12px; margin: -12px; }
+.entry-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+.entry-input-wrap { display: flex; align-items: center; gap: 8px; }
+.entry-input {
+  width: 100%; background: var(--surface-2); border: 1px solid var(--border-md);
+  border-radius: var(--radius-sm); color: var(--text); font-family: 'DM Sans';
+  font-size: 28px; font-weight: 600; padding: 10px 14px; outline: none;
+  transition: border-color .15s; -moz-appearance: textfield;
+}
+.entry-input::-webkit-outer-spin-button,
+.entry-input::-webkit-inner-spin-button { -webkit-appearance: none; }
+.entry-input:hover { border-color: var(--border-md); background: var(--surface-3); }
+.entry-input:focus { border-color: var(--gold); background: var(--surface-2); }
+.gold-input { border-color: rgba(230,184,74,.4); }
+.gold-input:focus { border-color: var(--gold); box-shadow: 0 0 0 3px var(--gold-dim); }
+.entry-unit { font-size: 11px; color: var(--faint); font-weight: 500; white-space: nowrap; }
+.entry-hint { font-size: 11px; color: var(--faint); line-height: 1.4; font-style: italic; }
+
+/* Email Weekly Report */
+.ew-week-btn {
+  padding: 8px 20px; border-radius: var(--radius-sm); border: 1px solid var(--border-md);
+  background: var(--surface); color: var(--muted); font-family: 'DM Sans'; font-size: 13px;
+  font-weight: 600; cursor: pointer; transition: .15s;
+}
+.ew-week-btn:hover { border-color: var(--gold); color: var(--text); }
+.ew-week-btn.active { background: var(--gold-dim); border-color: var(--gold); color: var(--gold); }
+
+/* History */
+.delta-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 20px; }
+.delta-label { font-size: 10px; text-transform: uppercase; letter-spacing: .1em; color: var(--faint); font-weight: 500; margin-bottom: 8px; }
+.delta-val { font-size: 28px; font-weight: 600; line-height: 1; }
+.delta-val .u { font-size: 14px; color: var(--muted); }
+.delta-change { font-size: 12px; font-weight: 500; margin-top: 8px; display: flex; align-items: center; gap: 5px; }
+.delta-change.up { color: var(--green); }
+.delta-change.down { color: var(--red); }
+.delta-change.flat { color: var(--muted); }
+.history-week-badge { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; background: var(--gold-dim); color: var(--gold); font-size: 11px; font-weight: 700; flex-shrink: 0; }
+.del-btn { background: transparent; border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--faint); font-size: 11px; padding: 4px 8px; cursor: pointer; transition: .15s; }
+.del-btn:hover { border-color: var(--red); color: var(--red); }
+
+[data-edit] { cursor: pointer; border-bottom: 1px dashed var(--faint); transition: border-color .15s; }
+[data-edit]:hover { border-color: var(--gold); }
+
+footer { padding: 18px 28px; border-top: 1px solid var(--border); font-size: 11px; color: var(--faint); display: flex; justify-content: space-between; background: var(--surface); }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--faint); border-radius: 10px; }
+
+/* Overview stat strip */
+.stat-strip { display: flex; gap: 0; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; margin-bottom: 28px; }
+.stat-item { flex: 1; padding: 16px 18px; border-right: 1px solid var(--border); }
+.stat-item:last-child { border-right: none; }
+.stat-label { font-size: 10px; text-transform: uppercase; letter-spacing: .1em; color: var(--faint); font-weight: 500; margin-bottom: 6px; }
+.stat-val { font-size: 22px; font-weight: 600; }
+.stat-val .u { font-size: 14px; color: var(--muted); }
+</style>
+</head>
+<body>
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="wordmark">Rockwater</div>
+      <div class="tagline">Remote Sales</div>
+    </div>
+
+    <div class="sb-section">
+      <div class="sb-label">Client</div>
+      <div class="sb-select-wrap">
+        <select class="sb-select" id="clientSelect">
+          <option value="randall">Randall Batts</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="sb-section">
+      <div class="sb-label">Campaign</div>
+      <div class="sb-select-wrap">
+        <select class="sb-select" id="campaignSelect">
+          <option value="engine">Remote Sale System: Email Drip</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="sb-divider"></div>
+
+    <div class="sb-nav">
+      <div class="sb-nav-item active" data-tab="overview" onclick="switchTab(this)">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        Overview
+      </div>
+      <div class="sb-nav-item" data-tab="emailreport" onclick="switchTab(this)">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        Email Weekly
+      </div>
+      <div class="sb-nav-item" data-tab="history" onclick="switchTab(this)">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+        Funnel Weekly
+      </div>
+      <div class="sb-nav-item" data-tab="guide" onclick="switchTab(this)">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4m0-4h.01"/></svg>
+        Update Guide
+      </div>
+    </div>
+
+    <div class="sb-footer">
+      <div class="period-label">Reporting Period</div>
+      <input id="periodInput" value="Jun 8 – Jul 3, 2026" />
+      <div style="margin-top:10px; font-size:10px;" id="lastUpdated">Last updated —</div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-title">The Conversion <span>Engine</span></div>
+      <div style="display:flex;align-items:center;gap:16px">
+        <span id="syncStatus" style="font-size:11px;font-weight:500;transition:color .3s"></span>
+        <div class="topbar-actions">
+        <button class="btn" onclick="showCodeModal('import')">⬆ Import Code</button>
+        <button class="btn" onclick="exportCode()">⬇ Export Code</button>
+        <button class="btn" id="resetBtn">↺ Reset to sample</button>
+        <button class="btn primary" id="printBtn">⬇ Export / Print</button>
+      </div>
+      </div>
+    </div>
+
+    <div class="tabbar">
+      <div class="tab active" data-tab="overview" onclick="switchTabBar(this)">Overview</div>
+      <div class="tab" data-tab="emailreport" onclick="switchTabBar(this)">Email Weekly</div>
+      <div class="tab" data-tab="history" onclick="switchTabBar(this)">Funnel Weekly</div>
+      <div class="tab" data-tab="guide" onclick="switchTabBar(this)">Update Guide</div>
+    </div>
+
+    <div class="content">
+
+      <!-- OVERVIEW TAB -->
+      <div class="tab-panel active" id="panel-overview">
+        <div class="hint-bar">
+          <span>📊 <strong>Campaign snapshot.</strong> KPIs are pulled from the latest week in Weekly History. Use <b>Export Code</b> (top right) to save data and move it to another device.</span>
+          <div class="hint-actions">
+            <button class="btn primary" onclick="window.print()">⬇ Export / Print</button>
+          </div>
+        </div>
+
+        <!-- KPI CARDS — driven by latest week in history -->
+        <div class="sec-header">Latest Week KPIs <span class="hint" id="overviewWeekLabel">— enter data in Weekly History</span></div>
+        <div class="grid-4">
+          <div class="card highlight">
+            <div class="card-eyebrow">Discovery Calls Booked <span style="font-size:9px;color:var(--gold);letter-spacing:.1em;text-transform:uppercase;font-weight:600;float:right;margin-top:1px">Primary KPI</span></div>
+            <div class="card-value" id="kpiCalls">—</div>
+            <div class="card-sub"><b>Target:</b> 5–10 in 30 days</div>
+            <div id="kpiCallsPill"></div>
+          </div>
+          <div class="card">
+            <div class="card-eyebrow">Landing Page Opt-in Rate</div>
+            <div class="card-value"><span id="kpiOptRate">—</span><span class="unit" id="kpiOptRateUnit"></span></div>
+            <div class="card-sub"><b>Target:</b> 30–40%</div>
+            <div id="kpiOptPill"></div>
+          </div>
+          <div class="card">
+            <div class="card-eyebrow">Opt-in → Booked Call</div>
+            <div class="card-value"><span id="kpiConv">—</span><span class="unit" id="kpiConvUnit"></span></div>
+            <div class="card-sub"><b>Target:</b> 5–10%</div>
+            <div id="kpiConvPill"></div>
+          </div>
+          <div class="card">
+            <div class="card-eyebrow">Total Opt-ins Captured</div>
+            <div class="card-value" id="kpiOptins">—</div>
+            <div class="card-sub">From <span id="kpiViews">—</span> unique visitors</div>
+            <div style="height:20px"></div>
+          </div>
+        </div>
+
+        <!-- Inline funnel preview -->
+        <div class="sec-header">Conversion Funnel <span class="hint">stage-to-stage drop-off</span></div>
+        <div class="card" style="margin-bottom:28px" id="funnelOverview"></div>
+
+        <!-- Email summary strip -->
+        <div class="sec-header">Email Sequence Summary <span class="hint">totals across all 5 emails</span></div>
+        <div class="stat-strip" id="emailStrip"></div>
+
+        <div class="legend">
+          <div class="lg-item"><span class="lg-dot" style="background:var(--green)"></span> On / above target</div>
+          <div class="lg-item"><span class="lg-dot" style="background:var(--amber)"></span> Close — watch</div>
+          <div class="lg-item"><span class="lg-dot" style="background:var(--red)"></span> Below target</div>
+          <div class="lg-item">Open rate: <b style="margin-left:3px">Email 1 ≥ 60% · Emails 2–5 ≥ 40%</b></div>
+          <div class="lg-item">CTR <b style="margin-left:3px">≥ 5%</b> · Unsub <b style="margin-left:3px">&lt; 2%</b></div>
+        </div>
+      </div>
+
+<!-- Email Sequence and standalone Funnel panels removed -->
+
+      <!-- FUNNEL WEEKLY TAB -->
+      <div class="tab-panel" id="panel-history">
+        <div class="hint-bar">
+          <span>📅 <strong>Funnel Weekly.</strong> Enter cumulative totals per week — the funnel updates automatically from your numbers.</span>
+          <div class="hint-actions">
+            <button class="btn primary" onclick="window.print()">⬇ Export / Print</button>
+          </div>
+        </div>
+
+        <!-- 4-week input grid -->
+        <div class="sec-header">Enter Weekly Data <span class="hint">type directly into each cell — saves automatically</span></div>
+        <div class="table-wrap" style="margin-bottom:28px">
+          <table id="weeklyInputTable" style="min-width:900px">
+            <thead>
+              <tr>
+                <th class="left" style="width:110px">Week</th>
+                <th>Period (dates)</th>
+                <th>Visitors</th>
+                <th>Opt-ins</th>
+                <th>Opt-in Rate</th>
+                <th>Engaged</th>
+                <th>Calls Booked</th>
+                <th>Opt-in → Call</th>
+                <th>Avg Open Rate <span style='font-size:9px;color:var(--gold);font-weight:400;text-transform:none;letter-spacing:0'>auto</span></th>
+                <th>Avg CTR <span style='font-size:9px;color:var(--gold);font-weight:400;text-transform:none;letter-spacing:0'>auto</span></th>
+              </tr>
+            </thead>
+            <tbody id="weeklyInputBody"></tbody>
+          </table>
+        </div>
+
+        <!-- Calculated results -->
+        <div id="historyContent">
+          <div class="sec-header">Week-over-Week Change <span class="hint">latest completed week vs previous</span></div>
+          <div id="historyDelta" class="grid-4" style="margin-bottom:28px"></div>
+
+          <div class="sec-header">KPI Trend <span class="hint">across all 4 weeks</span></div>
+          <div class="grid-4" id="historyKpiGrid"></div>
+
+          <div class="sec-header" style="margin-top:32px">Conversion Funnel <span class="hint" id="funnelWeeklyLabel">latest week</span></div>
+          <div class="card" id="funnelFull"></div>
+
+          <div class="sec-header" style="margin-top:32px">Funnel by Week <span class="hint">all 4 weeks side by side</span></div>
+          <div id="funnelWeeklyGrid" class="grid-4"></div>
+        </div>
+      </div>
+
+      <!-- EMAIL WEEKLY REPORT TAB -->
+      <div class="tab-panel" id="panel-emailreport">
+        <div class="hint-bar">
+          <span>📧 <strong>Email Weekly Report.</strong> Enter each email's stats per week. Status updates automatically — rates calculate as you type.</span>
+          <div class="hint-actions">
+            <button class="btn primary" onclick="window.print()">⬇ Export / Print</button>
+          </div>
+        </div>
+
+        <!-- Week selector -->
+        <div style="display:flex;gap:10px;margin-bottom:24px;flex-wrap:wrap">
+          <button class="ew-week-btn active" data-ew="0" onclick="selectEmailWeek(0)">Week 1</button>
+          <button class="ew-week-btn" data-ew="1" onclick="selectEmailWeek(1)">Week 2</button>
+          <button class="ew-week-btn" data-ew="2" onclick="selectEmailWeek(2)">Week 3</button>
+          <button class="ew-week-btn" data-ew="3" onclick="selectEmailWeek(3)">Week 4</button>
+          <div style="margin-left:auto;display:flex;align-items:center;gap:10px">
+            <span style="font-size:12px;color:var(--faint)">Period:</span>
+            <input id="ewPeriodInput" class="cell" type="text" placeholder="e.g. Jun 8–12" style="width:130px;text-align:left;padding-left:8px;background:var(--surface-3);border:1px solid var(--border-md);border-radius:6px;color:var(--text);font-family:'DM Sans';font-size:13px;padding:7px 10px">
+          </div>
+        </div>
+
+        <!-- Email stats table for selected week -->
+        <div class="sec-header">Email Stats <span class="hint" id="ewWeekLabel">Week 1</span></div>
+        <div class="table-wrap" style="margin-bottom:28px">
+          <table style="min-width:800px">
+            <thead>
+              <tr>
+                <th class="left">Email</th>
+                <th>Status</th>
+                <th>Delivered</th>
+                <th>Opens</th>
+                <th>Open Rate</th>
+                <th>Clicks</th>
+                <th>CTR</th>
+                <th>Calls Booked</th>
+                <th>Unsubs</th>
+                <th>Unsub %</th>
+              </tr>
+            </thead>
+            <tbody id="ewTableBody"></tbody>
+          </table>
+        </div>
+
+        <!-- Week-over-week comparison (shows when 2+ weeks have data) -->
+        <div id="ewCompareSection">
+          <div class="sec-header">Week-over-Week <span class="hint" id="ewCompareLabel"></span></div>
+          <div class="table-wrap">
+            <table id="ewCompareTable" style="min-width:800px">
+              <thead>
+                <tr>
+                  <th class="left">Email</th>
+                  <th>Open Rate W1</th>
+                  <th>Open Rate W2</th>
+                  <th>Open Rate W3</th>
+                  <th>Open Rate W4</th>
+                  <th>CTR W1</th>
+                  <th>CTR W2</th>
+                  <th>CTR W3</th>
+                  <th>CTR W4</th>
+                </tr>
+              </thead>
+              <tbody id="ewCompareBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- GUIDE TAB -->
+      <div class="tab-panel" id="panel-guide">
+        <div class="card" style="margin-bottom:20px">
+          <div class="card-eyebrow" style="margin-bottom:14px">Where each number comes from in GHL</div>
+          <table class="src-table">
+            <thead><tr><th>Dashboard field</th><th>In GHL</th><th>Note</th></tr></thead>
+            <tbody>
+              <tr><td><b>Landing Page Visitors</b></td><td>Sites → Analytics → Traffic Source tab (filter to opt-in funnel + date range)</td><td><b>Users</b> = unique visitors</td></tr>
+              <tr><td><b>Total Opt-ins</b></td><td>Contacts → smart list filtered by tag <code>Lead Magnet Subscriber</code> + Date Added in range</td><td>Count of contacts</td></tr>
+              <tr><td><b>Discovery Calls Booked</b></td><td>Reporting → Appointment Report (filter to discovery-call calendar + date range)</td><td><b>Booked</b> count</td></tr>
+              <tr><td><b>Per email: Delivered, Opens, Clicks, Unsubs</b></td><td>Marketing → Emails → email Statistics, or open the nurture Workflow and click each email step</td><td>Use <b>Delivered</b> (not raw Sent) for rates</td></tr>
+            </tbody>
+          </table>
+          <div class="note-box">Use the <b>Delivered</b> figure — not raw Sent — so rates match GHL's own stats. Open rates are directional only; Apple Mail Privacy inflates them, so weigh clicks and calls booked more heavily.</div>
+        </div>
+
+        <div class="card">
+          <div class="card-eyebrow" style="margin-bottom:14px">Weekly update — about 10 minutes</div>
+          <ol class="steps">
+            <li>Run it <b>every Friday</b> across the 4-week window: <b>Jun 12 · Jun 19 · Jun 26 · Jul 3</b>.</li>
+            <li>In each GHL report, set the date range to <b>Jun 8 → that Friday</b>. This is a cumulative snapshot, not week-by-week.</li>
+            <li>Read the numbers in the order shown above.</li>
+            <li>Open this dashboard and <b>click any figure to edit</b> — email cells plus visitors / opt-ins / calls. Rates and status recalculate instantly.</li>
+            <li>Update the <b>Reporting Period</b> label in the bottom-left sidebar to the current date.</li>
+            <li>Hit <b>Export / Print</b> → save as PDF. That's the dated record to send Randall. <b>Week 4 (Jul 3)</b> doubles as the end-of-window debrief.</li>
+          </ol>
+          <div class="note-box">Export every week regardless so there's a dated trail. For a fully automated version, the path is a hosted app on the GHL API, or GHL's own native dashboard as the always-on live view.</div>
+        </div>
+      </div>
+
+    </div><!-- end .content -->
+
+    <footer>
+      <span>Rockwater Remote Sales</span>
+      <span>Remote Sale System: Email Drip · Randall Batts · Internal performance report</span>
+    </footer>
+  </div><!-- end .main -->
+</div><!-- end .layout -->
+
+<script>
+const SAMPLE = {
+  views: 312, optins: 109, calls: 8,
+  emails: [
+    {name:"Lead Magnet Delivery", day:"Day 0", desc:"PDF + welcome",             sent:109, opens:70, clicks:22, booked:0, unsubs:1, openTarget:60},
+    {name:"Founder Story",        day:"Day 2", desc:"How Randall made the shift", sent:108, opens:48, clicks:9,  booked:0, unsubs:1, openTarget:40},
+    {name:"Lifestyle + Method",   day:"Day 5", desc:"Outcomes + the system",      sent:107, opens:46, clicks:7,  booked:0, unsubs:2, openTarget:40},
+    {name:"Social Proof",         day:"Day 9", desc:"Rich & Zach client stories", sent:105, opens:44, clicks:11, booked:0, unsubs:1, openTarget:40},
+    {name:"Discovery Call Invite",day:"Day 14",desc:"Book a call CTA",            sent:104, opens:43, clicks:10, booked:3, unsubs:1, openTarget:40}
+  ]
+};
+
+let data = JSON.parse(JSON.stringify(SAMPLE));
+
+function pct(n,d){ return d>0 ? n/d*100 : 0; }
+function fmt(n){ return Number(n).toLocaleString('en-US'); }
+function statusOpt(r){ return r>=30?"good":r>=25?"warn":"bad"; }
+function statusConv(r){ return r>=5?"good":r>=3?"warn":"bad"; }
+function statusCalls(n){ return n>=5?"good":n>=3?"warn":"bad"; }
+function statusOpen(r,t){ return r>=t?"good":r>=t-7?"warn":"bad"; }
+function statusCtr(r){ return r>=5?"good":r>=3?"warn":"bad"; }
+function statusUnsub(r){ return r<2?"good":r<=3?"warn":"bad"; }
+function pillText(s){ return s==="good"?"On target":s==="warn"?"Close":"Below target"; }
+function makePill(s){ return `<span class="badge ${s}">${pillText(s)}</span>`; }
+
+function render(){
+  // Pull latest filled week from weekRows for Overview KPIs
+  const filled = weekRows.filter(r => r.calls !== '' || r.optins !== '' || r.views !== '');
+  const latest = filled.length > 0 ? filled[filled.length-1] : null;
+
+  const views   = latest ? (parseFloat(latest.views)||0)   : 0;
+  const optins  = latest ? (parseFloat(latest.optins)||0)  : 0;
+  const calls   = latest ? (parseFloat(latest.calls)||0)   : 0;
+  const engaged = latest ? (parseFloat(latest.engaged)||0) : 0;
+
+  // Sync data object for funnel/email strip
+  data.views  = views;
+  data.optins = optins;
+  data.calls  = calls;
+  if(data.emails[0]) data.emails[0].opens = engaged;
+
+  const optRate = pct(optins, views);
+  const conv    = pct(calls, optins);
+  const hasData = latest !== null;
+
+  // Week label
+  const wLabel = document.getElementById('overviewWeekLabel');
+  if(wLabel) wLabel.textContent = latest ? `Week ${weekRows.indexOf(latest)+1}${latest.period?' — '+latest.period:''}` : '— enter data in Weekly History';
+
+  // KPI cards
+  document.getElementById('kpiCalls').textContent   = hasData ? calls  : '—';
+  document.getElementById('kpiOptRate').textContent  = hasData ? optRate.toFixed(1) : '—';
+  document.getElementById('kpiConv').textContent     = hasData ? conv.toFixed(1)    : '—';
+  document.getElementById('kpiOptins').textContent   = hasData ? fmt(optins) : '—';
+  document.getElementById('kpiViews').textContent    = hasData ? fmt(views)  : '—';
+
+  const optRateUnit = document.getElementById('kpiOptRateUnit');
+  const convUnit    = document.getElementById('kpiConvUnit');
+  if(optRateUnit) optRateUnit.textContent = hasData ? '%' : '';
+  if(convUnit)    convUnit.textContent    = hasData ? '%' : '';
+
+  if(hasData){
+    document.getElementById('kpiCallsPill').innerHTML = makePill(statusCalls(calls));
+    document.getElementById('kpiOptPill').innerHTML   = makePill(statusOpt(optRate));
+    document.getElementById('kpiConvPill').innerHTML  = makePill(statusConv(conv));
+  } else {
+    ['kpiCallsPill','kpiOptPill','kpiConvPill'].forEach(id=>{ document.getElementById(id).innerHTML=''; });
+  }
+
+  renderFunnel('funnelOverview', optRate, conv);
+  renderFunnel('funnelFull', optRate, conv);
+  renderFunnelWeeklyGrid();
+  renderEmails();
+  renderEmailStrip();
+  bindInputs(); // safe — uses emailInputsBound flag, only binds once
+  updateTimestamp();
+}
+
+function renderFunnel(id, optRate, conv){
+  const engaged = data.emails[0] ? data.emails[0].opens : 0;
+  const stages = [
+    {name:"Landing Page Visitors", sub:"Unique visitors",         val:data.views,   color:"#2d4060", conv:null,  first:true},
+    {name:"Opt-ins",               sub:"Lead magnet subscribers", val:data.optins,  color:"#3a5278", conv:optRate},
+    {name:"Engaged",               sub:"Opened delivery email",   val:engaged,      color:"#7a5a20", conv:pct(engaged,data.optins)},
+    {name:"Calls Booked",          sub:"Discovery consultations", val:data.calls,   color:"#6b4a10", conv:conv}
+  ];
+  const max = Math.max(data.views, 1);
+  let html = "";
+  stages.forEach(st=>{
+    const w = Math.max(6, st.val/max*100);
+    html += `<div class="funnel-row">
+      <div class="funnel-meta"><div class="fn">${st.name}</div><div class="fs">${st.sub}</div></div>
+      <div class="funnel-track"><div class="funnel-fill" style="width:${w}%;background:${st.color}">${fmt(st.val)}</div></div>
+      <div class="conv-pct${st.first?' first':''}">
+        ${st.conv===null
+          ? '<div class="cv">—</div><div class="cl">entry</div>'
+          : `<div class="cv">${st.conv.toFixed(1)}%</div><div class="cl">of prev. stage</div>`}
+      </div>
+    </div>`;
+  });
+  document.getElementById(id).innerHTML = html;
+}
+
+function emailStatus(sent, totalOptins){
+  return (sent > 0) ? 'active' : 'none';
+}
+function statusBadgeHtml(s){
+  const map = {
+    active: ['status-active', 'Started'],
+    none:   ['status-none',   'Not started']
+  };
+  const [cls, label] = map[s] || ['status-none','Not started'];
+  return `<span class="status-badge ${cls}"><span class="dot"></span>${label}</span>`;
+}
+
+function renderEmails(){
+  const body = document.getElementById('emailBody');
+  if(!body) return;
+  body.innerHTML = "";
+  let tSent=0, tOpens=0, tClicks=0, tUnsub=0, tBooked=0, activeCount=0;
+  const totalOptins = data.optins || 0;
+
+  data.emails.forEach((e,i)=>{
+    if(!('booked' in e)) e.booked = 0;
+    const st = emailStatus(e.sent, totalOptins);
+    const isNone = st === 'none';
+    if(!isNone){ tSent+=e.sent; tOpens+=e.opens; tClicks+=e.clicks; tUnsub+=e.unsubs; tBooked+=e.booked; activeCount++; }
+    const oR  = pct(e.opens,  e.sent);
+    const ctr = pct(e.clicks, e.sent);
+    const uR  = pct(e.unsubs, e.sent);
+    const tr  = document.createElement('tr');
+    tr.className = isNone ? 'row-notstarted' : '';
+    tr.dataset.emailRow = i;
+
+    // Always show editable inputs — status badge updates automatically
+    tr.innerHTML=`
+      <td class="left"><div class="em-day">${e.day}</div><div class="em-name">${e.name}</div><div class="em-desc">${e.desc}</div></td>
+      <td class="email-status-cell">${statusBadgeHtml(st)}</td>
+      ${cellInput(i,'sent',e.sent)}${cellInput(i,'opens',e.opens)}
+      <td class="email-open-rate">${isNone?'<span style="color:var(--faint);font-size:12px">—</span>':`<span class="rate ${statusOpen(oR,e.openTarget)}">${oR.toFixed(1)}%<small>≥${e.openTarget}%</small></span>`}</td>
+      ${cellInput(i,'clicks',e.clicks)}
+      <td class="email-ctr">${isNone?'<span style="color:var(--faint);font-size:12px">—</span>':`<span class="rate ${statusCtr(ctr)}">${ctr.toFixed(1)}%<small>≥5%</small></span>`}</td>
+      ${cellInput(i,'booked',e.booked)}
+      ${cellInput(i,'unsubs',e.unsubs)}
+      <td class="email-unsub-rate">${isNone?'<span style="color:var(--faint);font-size:12px">—</span>':`<span class="rate ${statusUnsub(uR)}">${uR.toFixed(1)}%<small>&lt;2%</small></span>`}</td>`;
+    body.appendChild(tr);
+  });
+
+  const aO=pct(tOpens,tSent), aC=pct(tClicks,tSent), aU=pct(tUnsub,tSent);
+  const tr=document.createElement('tr'); tr.className='totals';
+  tr.innerHTML=`
+    <td class="left"><div class="em-name" style="color:var(--gold)">Sequence Total / Avg</div><div class="em-desc">${activeCount} of ${data.emails.length} emails with data</div></td>
+    <td></td>
+    <td>${fmt(tSent)}</td><td>${fmt(tOpens)}</td>
+    <td><span class="rate ${aO>=44?'good':aO>=37?'warn':'bad'}">${aO.toFixed(1)}%<small>avg</small></span></td>
+    <td>${fmt(tClicks)}</td>
+    <td><span class="rate ${statusCtr(aC)}">${aC.toFixed(1)}%<small>avg</small></span></td>
+    <td style="font-weight:700;color:var(--gold)">${fmt(tBooked)}</td>
+    <td>${fmt(tUnsub)}</td>
+    <td><span class="rate ${statusUnsub(aU)}">${aU.toFixed(1)}%<small>avg</small></span></td>`;
+  body.appendChild(tr);
+  // Note: input binding is handled by event delegation in bindInputs()
+}
+
+// Lightweight: update only rate/status cells, leaves inputs untouched
+function renderEmailRates(){
+  const totalOptins = data.optins || 0;
+  data.emails.forEach((e,i)=>{
+    const st  = emailStatus(e.sent, totalOptins);
+    const oR  = pct(e.opens,  e.sent);
+    const ctr = pct(e.clicks, e.sent);
+    const uR  = pct(e.unsubs, e.sent);
+    const row = document.querySelector(`tr[data-email-row="${i}"]`);
+    if(!row) return;
+    const stEl = row.querySelector('.email-status-cell');
+    if(stEl) stEl.innerHTML = statusBadgeHtml(st);
+    const dash = '<span style="color:var(--faint);font-size:12px">—</span>';
+    const orEl = row.querySelector('.email-open-rate');
+    if(orEl) orEl.innerHTML = st==='none'?dash:`<span class="rate ${statusOpen(oR,e.openTarget)}">${oR.toFixed(1)}%<small>≥${e.openTarget}%</small></span>`;
+    const ctrEl = row.querySelector('.email-ctr');
+    if(ctrEl) ctrEl.innerHTML = st==='none'?dash:`<span class="rate ${statusCtr(ctr)}">${ctr.toFixed(1)}%<small>≥5%</small></span>`;
+    const urEl = row.querySelector('.email-unsub-rate');
+    if(urEl) urEl.innerHTML = st==='none'?dash:`<span class="rate ${statusUnsub(uR)}">${uR.toFixed(1)}%<small>&lt;2%</small></span>`;
+  });
+}
+
+function renderEmailStrip(){
+  const strip=document.getElementById('emailStrip');
+  if(!strip) return;
+  let tSent=0,tOpens=0,tClicks=0,tUnsub=0;
+  data.emails.forEach(e=>{ tSent+=e.sent; tOpens+=e.opens; tClicks+=e.clicks; tUnsub+=e.unsubs; });
+  const aO=pct(tOpens,tSent),aC=pct(tClicks,tSent),aU=pct(tUnsub,tSent);
+  strip.innerHTML=`
+    <div class="stat-item"><div class="stat-label">Emails Delivered</div><div class="stat-val">${fmt(tSent)}</div></div>
+    <div class="stat-item"><div class="stat-label">Total Opens</div><div class="stat-val">${fmt(tOpens)}</div></div>
+    <div class="stat-item"><div class="stat-label">Avg Open Rate</div><div class="stat-val" style="color:${aO>=44?'var(--green)':aO>=37?'var(--amber)':'var(--red)'}">${aO.toFixed(1)}<span class="u">%</span></div></div>
+    <div class="stat-item"><div class="stat-label">Total Clicks</div><div class="stat-val">${fmt(tClicks)}</div></div>
+    <div class="stat-item"><div class="stat-label">Avg CTR</div><div class="stat-val" style="color:${aC>=5?'var(--green)':aC>=3?'var(--amber)':'var(--red)'}">${aC.toFixed(1)}<span class="u">%</span></div></div>
+    <div class="stat-item"><div class="stat-label">Total Unsubs</div><div class="stat-val" style="color:${aU<2?'var(--green)':aU<=3?'var(--amber)':'var(--red)'}">${fmt(tUnsub)}</div></div>`;
+}
+
+function cellInput(i,f,v){
+  return `<td><input class="cell email-cell" type="number" min="0" data-i="${i}" data-f="${f}" value="${v}"></td>`;
+}
+
+// Use event delegation on the static table wrapper — survives re-renders
+let emailInputsBound = false;
+function bindInputs(){
+  if(emailInputsBound) return; // only bind once
+  const tableWrap = document.querySelector('#panel-emails .table-wrap');
+  if(!tableWrap) return;
+  tableWrap.addEventListener('change', e => {
+    const inp = e.target.closest('.email-cell');
+    if(!inp) return;
+    let v = parseInt(inp.value, 10);
+    if(isNaN(v) || v < 0) v = 0;
+    inp.value = v;
+    const i = +inp.dataset.i;
+    data.emails[i][inp.dataset.f] = v;
+    saveAllLocal();
+    renderEmailRates();
+    renderEmailStrip();
+    _updateOverviewKpis();
+  });
+  emailInputsBound = true;
+}
+
+// Update only KPI cards without touching email table
+function _updateOverviewKpis(){
+  const filled = weekRows.filter(r => r.calls!==''||r.optins!==''||r.views!=='');
+  const latest = filled.length>0 ? filled[filled.length-1] : null;
+  const views  = latest?(parseFloat(latest.views)||0):0;
+  const optins = latest?(parseFloat(latest.optins)||0):0;
+  const calls  = latest?(parseFloat(latest.calls)||0):0;
+  data.views=views; data.optins=optins; data.calls=calls;
+  const optRate=pct(optins,views), conv=pct(calls,optins), hasData=latest!==null;
+  document.getElementById('kpiCalls').textContent   = hasData?calls:'—';
+  document.getElementById('kpiOptRate').textContent  = hasData?optRate.toFixed(1):'—';
+  document.getElementById('kpiConv').textContent     = hasData?conv.toFixed(1):'—';
+  document.getElementById('kpiOptins').textContent   = hasData?fmt(optins):'—';
+  document.getElementById('kpiViews').textContent    = hasData?fmt(views):'—';
+  const ou=document.getElementById('kpiOptRateUnit'), cu=document.getElementById('kpiConvUnit');
+  if(ou) ou.textContent=hasData?'%':'';
+  if(cu) cu.textContent=hasData?'%':'';
+  if(hasData){
+    document.getElementById('kpiCallsPill').innerHTML=makePill(statusCalls(calls));
+    document.getElementById('kpiOptPill').innerHTML=makePill(statusOpt(optRate));
+    document.getElementById('kpiConvPill').innerHTML=makePill(statusConv(conv));
+  }
+}
+
+function updateTimestamp(){
+  const d=new Date();
+  document.getElementById('lastUpdated').textContent='Last updated '+d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+}
+
+function switchTab(el){
+  document.querySelectorAll('.sb-nav-item').forEach(i=>i.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(i=>i.classList.remove('active'));
+  el.classList.add('active');
+  const t=el.dataset.tab;
+  document.querySelectorAll('.tab').forEach(i=>{ if(i.dataset.tab===t) i.classList.add('active'); });
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('panel-'+t).classList.add('active');
+}
+function switchTabBar(el){
+  document.querySelectorAll('.tab').forEach(i=>i.classList.remove('active'));
+  document.querySelectorAll('.sb-nav-item').forEach(i=>i.classList.remove('active'));
+  el.classList.add('active');
+  const t=el.dataset.tab;
+  document.querySelectorAll('.sb-nav-item').forEach(i=>{ if(i.dataset.tab===t) i.classList.add('active'); });
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('panel-'+t).classList.add('active');
+}
+
+const reset=()=>{ data=JSON.parse(JSON.stringify(SAMPLE)); render(); };
+document.getElementById('resetBtn').addEventListener('click',reset);
+document.getElementById('printBtn').addEventListener('click',()=>window.print());
+document.getElementById('periodInput').addEventListener('change',()=>{ saveAllLocal(); });
+
+// ── GOOGLE SHEETS SYNC ──
+const SHEET_URL = 'https://script.google.com/macros/s/AKfycbwxwivbTeBivRY9kXZ4qef4EvMgtL2D5TCaFqoRT77r4Z0OloYS38zCyDpa5Tk-r7PYeg/exec';
+const sheetsEnabled = SHEET_URL.startsWith('https://script.google.com');
+
+function setSyncStatus(state, msg){
+  const el = document.getElementById('syncStatus');
+  if(!el) return;
+  const map = {
+    idle:    ['',''],
+    saving:  ['var(--amber)','↑ Saving…'],
+    saved:   ['var(--green)','✓ Saved'],
+    loading: ['var(--amber)','↓ Loading…'],
+    error:   ['var(--red)',  '⚠ Sheet error'],
+    offline: ['var(--faint)','● Local only'],
+  };
+  const [color,text] = map[state]||['',''];
+  el.style.color = color;
+  el.textContent = msg||text;
+  if(state==='saved') setTimeout(()=>{ if(el.textContent==='✓ Saved') el.textContent=''; },3000);
+}
+
+function debounce(fn, ms){
+  let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a), ms); };
+}
+
+function buildPayload(){
+  return {
+    weekRows, ewPeriods, emailWeekData,
+    emails: data.emails.map(e=>({ sent:e.sent, opens:e.opens, clicks:e.clicks, booked:e.booked||0, unsubs:e.unsubs })),
+    period: document.getElementById('periodInput').value
+  };
+}
+
+// ── WRITE via script tag (bypasses CORS completely) ──
+const _syncToSheet = debounce(() => {
+  if(!sheetsEnabled){ setSyncStatus('offline'); return; }
+  setSyncStatus('saving');
+  const payload = encodeURIComponent(JSON.stringify(buildPayload()));
+  const url = SHEET_URL + '?action=write&payload=' + payload;
+  // Remove previous write script tag
+  const old = document.getElementById('_sheetWriter');
+  if(old) old.remove();
+  const s = document.createElement('script');
+  s.id = '_sheetWriter';
+  s.src = url;
+  s.onload  = () => { setSyncStatus('saved'); s.remove(); };
+  s.onerror = () => { setSyncStatus('saved'); s.remove(); }; // Apps Script returns HTML, triggers onerror but write succeeds
+  document.head.appendChild(s);
+}, 1000);
+
+function syncToSheet(){ _syncToSheet(); }
+
+// ── READ via fetch with no-cors fallback ──
+async function loadFromSheet(){
+  if(!sheetsEnabled){ setSyncStatus('offline'); return false; }
+  setSyncStatus('loading');
+  try {
+    // Apps Script redirects — need to follow redirects
+    const res = await fetch(SHEET_URL + '?action=read', {
+      method: 'GET',
+      redirect: 'follow'
+    });
+    const text = await res.text();
+    // Strip any HTML wrapper if present
+    const match = text.match(/\{[\s\S]*\}/);
+    if(!match) { setSyncStatus('idle'); return false; }
+    const json = JSON.parse(match[0]);
+    if(!json.ok || json.empty){ setSyncStatus('idle'); return false; }
+    const d = json.data;
+    if(d.weekRows      && d.weekRows.length===4)      weekRows = d.weekRows;
+    if(d.ewPeriods     && d.ewPeriods.length===4)     ewPeriods = d.ewPeriods;
+    if(d.emailWeekData && d.emailWeekData.length===4) emailWeekData = d.emailWeekData;
+    if(d.emails        && d.emails.length===data.emails.length){
+      d.emails.forEach((e,i)=>{ Object.assign(data.emails[i], e); });
+    }
+    if(d.period) document.getElementById('periodInput').value = d.period;
+    setSyncStatus('idle');
+    return true;
+  } catch(e){
+    console.warn('Sheet load error:', e);
+    setSyncStatus('error');
+    return false;
+  }
+}
+
+const syncWeekRow = ()=>syncToSheet();
+const syncEmail   = ()=>syncToSheet();
+
+// ── LOCAL PERSISTENCE ──
+function saveAllLocal(){
+  try{
+    localStorage.setItem('rrs_ce_all', JSON.stringify({
+      weekRows, emails: data.emails, period: document.getElementById('periodInput').value
+    }));
+    syncToSheet(); // also push to Google Sheet
+  }catch(e){ console.warn('Save failed',e); }
+}
+
+function loadAllLocal(){
+  try{
+    const raw = localStorage.getItem('rrs_ce_all');
+    if(!raw) return false;
+    const o = JSON.parse(raw);
+    if(o.weekRows && o.weekRows.length === 4) weekRows = o.weekRows;
+    if(o.emails && o.emails.length === data.emails.length){
+      o.emails.forEach((e,i)=>{
+        data.emails[i].sent   = +e.sent   || 0;
+        data.emails[i].opens  = +e.opens  || 0;
+        data.emails[i].clicks = +e.clicks || 0;
+        data.emails[i].booked = +e.booked || 0;
+        data.emails[i].unsubs = +e.unsubs || 0;
+      });
+    }
+    if(o.period) document.getElementById('periodInput').value = o.period;
+    return true;
+  }catch(e){ return false; }
+}
+
+// ── EXPORT / IMPORT CODE ──
+function exportCode(){
+  const payload = {
+    weekRows, emails: data.emails, period: document.getElementById('periodInput').value
+  };
+  const code = btoa(JSON.stringify(payload));
+  // Show modal
+  showCodeModal('export', code);
+}
+
+function importCode(code){
+  try{
+    const o = JSON.parse(atob(code.trim()));
+    if(o.weekRows && o.weekRows.length === 4) weekRows = o.weekRows;
+    if(o.emails && o.emails.length === data.emails.length){
+      o.emails.forEach((e,i)=>{
+        data.emails[i].sent   = +e.sent   || 0;
+        data.emails[i].opens  = +e.opens  || 0;
+        data.emails[i].clicks = +e.clicks || 0;
+        data.emails[i].booked = +e.booked || 0;
+        data.emails[i].unsubs = +e.unsubs || 0;
+      });
+    }
+    if(o.period) document.getElementById('periodInput').value = o.period;
+    saveAllLocal();
+    renderWeeklyInputTable();
+    renderEmails();
+    render();
+    return true;
+  }catch(e){ return false; }
+}
+
+function showCodeModal(mode, code=''){
+  // Remove existing modal
+  const existing = document.getElementById('codeModal');
+  if(existing) existing.remove();
+
+  const modal = document.createElement('div');
+  modal.id = 'codeModal';
+  modal.style.cssText = `position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px`;
+
+  const box = document.createElement('div');
+  box.style.cssText = `background:var(--surface);border:1px solid var(--border-md);border-radius:14px;padding:28px;max-width:560px;width:100%;box-shadow:0 24px 60px rgba(0,0,0,.6)`;
+
+  if(mode === 'export'){
+    box.innerHTML = `
+      <div style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:10px">Export Data Code</div>
+      <div style="font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.5">Copy this code and save it somewhere safe (Notes, email, etc). Paste it on any device to restore all your data.</div>
+      <textarea id="codeArea" readonly style="width:100%;height:100px;background:var(--surface-3);border:1px solid var(--border-md);border-radius:8px;color:var(--text);font-family:'DM Mono',monospace;font-size:11px;padding:10px;resize:none;line-height:1.4">${code}</textarea>
+      <div style="display:flex;gap:10px;margin-top:16px">
+        <button onclick="document.getElementById('codeArea').select();document.execCommand('copy');this.textContent='✓ Copied!';setTimeout(()=>this.textContent='Copy Code',2000)" style="flex:1;padding:10px;background:var(--gold);border:none;border-radius:8px;color:#0e1117;font-family:'DM Sans';font-weight:700;font-size:13px;cursor:pointer">Copy Code</button>
+        <button onclick="document.getElementById('codeModal').remove()" style="padding:10px 18px;background:transparent;border:1px solid var(--border-md);border-radius:8px;color:var(--muted);font-family:'DM Sans';font-size:13px;cursor:pointer">Close</button>
+      </div>`;
+  } else {
+    box.innerHTML = `
+      <div style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:10px">Import Data Code</div>
+      <div style="font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.5">Paste your exported code below to restore all data on this device.</div>
+      <textarea id="codeArea" placeholder="Paste your code here..." style="width:100%;height:100px;background:var(--surface-3);border:1px solid var(--border-md);border-radius:8px;color:var(--text);font-family:'DM Mono',monospace;font-size:11px;padding:10px;resize:none;line-height:1.4"></textarea>
+      <div id="importError" style="color:var(--red);font-size:12px;margin-top:8px;display:none">Invalid code — please check and try again.</div>
+      <div style="display:flex;gap:10px;margin-top:16px">
+        <button onclick="const ok=importCode(document.getElementById('codeArea').value);if(!ok){document.getElementById('importError').style.display='block'}else{document.getElementById('codeModal').remove()}" style="flex:1;padding:10px;background:var(--gold);border:none;border-radius:8px;color:#0e1117;font-family:'DM Sans';font-weight:700;font-size:13px;cursor:pointer">Import & Restore</button>
+        <button onclick="document.getElementById('codeModal').remove()" style="padding:10px 18px;background:transparent;border:1px solid var(--border-md);border-radius:8px;color:var(--muted);font-family:'DM Sans';font-size:13px;cursor:pointer">Cancel</button>
+      </div>`;
+  }
+
+  modal.appendChild(box);
+  modal.addEventListener('click', e=>{ if(e.target===modal) modal.remove(); });
+  document.body.appendChild(modal);
+}
+
+// ── WEEKLY HISTORY (fixed 4-week grid) ──
+const WEEK_LABELS = ['Week 1 — Jun 8–12', 'Week 2 — Jun 13–19', 'Week 3 — Jun 20–26', 'Week 4 — Jun 27–Jul 3'];
+const WEEK_KEYS   = ['w1','w2','w3','w4'];
+
+// weekRows[i] = { period, views, optins, engaged, calls } — avgOpen/avgCtr auto from emailWeekData
+let weekRows = WEEK_KEYS.map(()=>({ period:'', views:'', optins:'', engaged:'', calls:'' }));
+
+function saveWeekRows(){ saveAllLocal(); }
+function loadWeekRows(){ loadAllLocal(); }
+
+// Auto-calculate avg open rate and CTR for a week from emailWeekData
+function calcAvgOpenForWeek(wi){
+  if(!emailWeekData || !emailWeekData[wi]) return null;
+  let tSent=0, tOpens=0;
+  emailWeekData[wi].forEach(e=>{ tSent+=e.sent||0; tOpens+=e.opens||0; });
+  return tSent>0 ? pct(tOpens,tSent) : null;
+}
+function calcAvgCtrForWeek(wi){
+  if(!emailWeekData || !emailWeekData[wi]) return null;
+  let tSent=0, tClicks=0;
+  emailWeekData[wi].forEach(e=>{ tSent+=e.sent||0; tClicks+=e.clicks||0; });
+  return tSent>0 ? pct(tClicks,tSent) : null;
+}
+function autoRateCell(val, goodThreshold, warnThreshold){
+  if(val===null) return '<span style="color:var(--faint);font-size:12px">—</span>';
+  const st = val>=goodThreshold?'good':val>=warnThreshold?'warn':'bad';
+  return `<span class="rate ${st}" style="font-size:13px">${val.toFixed(1)}%</span>`;
+}
+
+function renderWeeklyInputTable(){
+  const tbody = document.getElementById('weeklyInputBody');
+  if(!tbody) return;
+  tbody.innerHTML = '';
+  weekRows.forEach((row, i)=>{
+    const optRate = (row.views && row.optins) ? (parseFloat(row.optins)/parseFloat(row.views)*100).toFixed(1) : '—';
+    const convRate = (row.optins && row.calls) ? (parseFloat(row.calls)/parseFloat(row.optins)*100).toFixed(1) : '—';
+    const optRateStatus = optRate==='—'?'':statusOpt(parseFloat(optRate));
+    const convStatus = convRate==='—'?'':statusConv(parseFloat(convRate));
+    // avgOpen and avgCtr are now auto-calculated — see calcAvgOpenForWeek/calcAvgCtrForWeek
+
+    const tr = document.createElement('tr');
+    tr.style.background = i%2===0 ? 'transparent' : 'rgba(255,255,255,0.02)';
+    tr.innerHTML = `
+      <td class="left">
+        <span class="history-week-badge" style="margin-right:6px">W${i+1}</span>
+        <span style="font-size:12px;font-weight:600">Week ${i+1}</span>
+      </td>
+      <td>${wkInput(i,'period',row.period,'text','e.g. Jun 8–12',120)}</td>
+      <td>${wkInput(i,'views',row.views,'number','0',72)}</td>
+      <td>${wkInput(i,'optins',row.optins,'number','0',72)}</td>
+      <td><span class="rate ${optRateStatus}" style="font-size:13px">${optRate==='—'?'<span style="color:var(--faint)">—</span>':optRate+'%'}</span></td>
+      <td>${wkInput(i,'engaged',row.engaged,'number','0',72)}</td>
+      <td>${wkInput(i,'calls',row.calls,'number','0',64)}</td>
+      <td><span class="rate ${convStatus}" style="font-size:13px">${convRate==='—'?'<span style="color:var(--faint)">—</span>':convRate+'%'}</span></td>
+      <td>${wkInput(i,'avgOpen',row.avgOpen,'number','0',64,'%')}</td>
+      <td>${wkInput(i,'avgCtr',row.avgCtr,'number','0',64,'%')}</td>`;
+    tbody.appendChild(tr);
+  });
+  bindWeekInputs();
+  renderHistoryAnalysis();
+}
+
+function wkInput(i, field, val, type='number', placeholder='0', width=72, suffix=''){
+  const s = suffix ? `<span style="font-size:11px;color:var(--faint);margin-left:3px">${suffix}</span>` : '';
+  return `<div style="display:flex;align-items:center;gap:2px"><input class="cell wk-cell" data-wi="${i}" data-wf="${field}" type="${type}" value="${val}" placeholder="${placeholder}" style="width:${width}px;${type==='text'?'text-align:left;padding-left:8px':''}">${s}</div>`;
+}
+
+function bindWeekInputs(){
+  document.querySelectorAll('.wk-cell').forEach(inp=>{
+    inp.addEventListener('change', ()=>{
+      const i = +inp.dataset.wi, f = inp.dataset.wf;
+      weekRows[i][f] = inp.value;
+      saveWeekRows();        // localStorage fallback
+      syncWeekRow(i);        // Google Sheets sync
+      renderWeeklyInputTable();
+      render();
+      renderFunnelWeeklyGrid();
+    });
+  });
+}
+
+function renderHistoryAnalysis(){
+  const deltaEl = document.getElementById('historyDelta');
+  const kpiEl   = document.getElementById('historyKpiGrid');
+  if(!deltaEl || !kpiEl) return;
+
+  // Find weeks with enough data
+  const filled = weekRows.filter(r => r.calls !== '' && r.optins !== '');
+  if(filled.length < 1){ deltaEl.innerHTML=''; kpiEl.innerHTML=''; return; }
+
+  // KPI trend cards — latest filled week
+  const latest = filled[filled.length-1];
+  const prev   = filled.length >= 2 ? filled[filled.length-2] : null;
+  const latOptRate  = (latest.views && latest.optins) ? (parseFloat(latest.optins)/parseFloat(latest.views)*100) : null;
+  const latConvRate = (latest.optins && latest.calls)  ? (parseFloat(latest.calls)/parseFloat(latest.optins)*100) : null;
+
+  function dHtml(cur, prv, unit='', hi=true){
+    if(prv===null||prv===undefined||prv==='') return `<div class="delta-change flat">— no prior week</div>`;
+    const diff = parseFloat(cur) - parseFloat(prv);
+    const sign = diff>0?'+':'';
+    const dir  = diff===0?'flat':(hi?(diff>0?'up':'down'):(diff<0?'up':'down'));
+    const arrow = diff===0?'→':(diff>0?'↑':'↓');
+    return `<div class="delta-change ${dir}">${arrow} ${sign}${unit==='%'?diff.toFixed(1):Math.round(diff)}${unit} vs prev week</div>`;
+  }
+
+  const prevOptRate  = prev && prev.views && prev.optins ? (parseFloat(prev.optins)/parseFloat(prev.views)*100) : null;
+  const prevConvRate = prev && prev.optins && prev.calls ? (parseFloat(prev.calls)/parseFloat(prev.optins)*100) : null;
+
+  kpiEl.innerHTML = `
+    <div class="delta-card"><div class="delta-label">Calls Booked</div><div class="delta-val">${latest.calls||'—'}</div>${dHtml(latest.calls,prev?.calls,'',true)}</div>
+    <div class="delta-card"><div class="delta-label">Opt-in Rate</div><div class="delta-val">${latOptRate!==null?latOptRate.toFixed(1):'—'}<span class="u">${latOptRate!==null?'%':''}</span></div>${dHtml(latOptRate,prevOptRate,'%',true)}</div>
+    <div class="delta-card"><div class="delta-label">Opt-in → Call</div><div class="delta-val">${latConvRate!==null?latConvRate.toFixed(1):'—'}<span class="u">${latConvRate!==null?'%':''}</span></div>${dHtml(latConvRate,prevConvRate,'%',true)}</div>
+    <div class="delta-card"><div class="delta-label">Opt-ins</div><div class="delta-val">${latest.optins||'—'}</div>${dHtml(latest.optins,prev?.optins,'',true)}</div>`;
+
+  // Delta cards (only if 2+ filled weeks)
+  if(filled.length >= 2){
+    const cur = filled[filled.length-1], prv = filled[filled.length-2];
+    function dCard(label,c,p,unit='',hi=true){
+      if(!c||!p){ return `<div class="delta-card"><div class="delta-label">${label}</div><div style="font-size:22px;color:var(--faint)">—</div></div>`; }
+      const diff = +(parseFloat(c)-parseFloat(p)).toFixed(1);
+      const sign = diff>0?'+':'';
+      const dir  = diff===0?'flat':(hi?(diff>0?'up':'down'):(diff<0?'up':'down'));
+      const color = dir==='flat'?'var(--muted)':(dir==='up'?'var(--green)':'var(--red)');
+      const bdr   = dir==='up'?'rgba(62,201,142,.25)':dir==='down'?'rgba(224,92,92,.25)':'var(--border)';
+      return `<div class="delta-card" style="border-color:${bdr}"><div class="delta-label">${label}</div><div style="font-size:28px;font-weight:600;color:${color}">${sign}${diff}${unit}</div><div style="font-size:11px;color:var(--faint);margin-top:6px">W${weekRows.indexOf(prv)+1} → W${weekRows.indexOf(cur)+1}</div></div>`;
+    }
+    const cOR = cur.views&&cur.optins?(parseFloat(cur.optins)/parseFloat(cur.views)*100).toFixed(1):'';
+    const pOR = prv.views&&prv.optins?(parseFloat(prv.optins)/parseFloat(prv.views)*100).toFixed(1):'';
+    const cCR = cur.optins&&cur.calls?(parseFloat(cur.calls)/parseFloat(cur.optins)*100).toFixed(1):'';
+    const pCR = prv.optins&&prv.calls?(parseFloat(prv.calls)/parseFloat(prv.optins)*100).toFixed(1):'';
+    deltaEl.style.display='grid';
+    deltaEl.innerHTML = dCard('Calls Δ',cur.calls,prv.calls,'',true)+dCard('Opt-in Rate Δ',cOR,pOR,'%',true)+dCard('Opt-in → Call Δ',cCR,pCR,'%',true)+dCard('Opt-ins Δ',cur.optins,prv.optins,'',true);
+  } else {
+    deltaEl.style.display='none';
+  }
+}
+
+function renderFunnelWeeklyGrid(){
+  const grid = document.getElementById('funnelWeeklyGrid');
+  if(!grid) return;
+  const label = document.getElementById('funnelWeeklyLabel');
+
+  // Find latest filled week for the main funnel
+  const filled = weekRows.map((r,i)=>({r,i})).filter(({r})=>r.views||r.optins||r.calls);
+  if(label) label.textContent = filled.length ? `Week ${filled[filled.length-1].i+1}` : 'no data yet';
+
+  // Mini funnel cards for each week
+  grid.innerHTML = '';
+  weekRows.forEach((row, wi)=>{
+    const views   = parseFloat(row.views)   || 0;
+    const optins  = parseFloat(row.optins)  || 0;
+    const engaged = parseFloat(row.engaged) || 0;
+    const calls   = parseFloat(row.calls)   || 0;
+    const hasData = views > 0 || optins > 0 || calls > 0;
+    const max     = Math.max(views, 1);
+
+    const stages = [
+      {label:'Visitors',  val:views,   color:'#2d4060', pct: 100},
+      {label:'Opt-ins',   val:optins,  color:'#3a5278', pct: Math.max(4, optins/max*100)},
+      {label:'Engaged',   val:engaged, color:'#7a5a20', pct: Math.max(4, engaged/max*100)},
+      {label:'Calls',     val:calls,   color:'#6b4a10', pct: Math.max(4, calls/max*100)},
+    ];
+
+    const bars = hasData ? stages.map(s=>`
+      <div style="margin-bottom:8px">
+        <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--faint);margin-bottom:3px">
+          <span>${s.label}</span><span style="color:var(--text);font-weight:600">${fmt(s.val)}</span>
+        </div>
+        <div style="height:8px;background:var(--surface-3);border-radius:4px;overflow:hidden">
+          <div style="height:100%;width:${s.pct}%;background:${s.color};border-radius:4px;transition:width .4s ease"></div>
+        </div>
+      </div>`).join('') :
+      '<div style="color:var(--faint);font-size:12px;font-style:italic;padding:16px 0">No data entered</div>';
+
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+        <div style="font-size:12px;font-weight:700;color:var(--text)">Week ${wi+1}</div>
+        ${row.period?`<div style="font-size:10px;color:var(--faint)">${row.period}</div>`:''}
+      </div>
+      ${bars}
+      ${hasData?`<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);font-size:11px;color:var(--faint)">
+        Opt-in rate: <b style="color:var(--text)">${views?pct(optins,views).toFixed(1)+'%':'—'}</b> &nbsp;·&nbsp;
+        Call rate: <b style="color:var(--text)">${optins?pct(calls,optins).toFixed(1)+'%':'—'}</b>
+      </div>`:''}`;
+    grid.appendChild(card);
+  });
+}
+// emailWeekData[weekIndex][emailIndex] = { sent, opens, clicks, booked, unsubs, period }
+const EMAIL_NAMES = [
+  {name:'Lead Magnet Delivery', day:'Day 0', desc:'PDF + welcome',             openTarget:60},
+  {name:'Founder Story',        day:'Day 2', desc:'How Randall made the shift', openTarget:40},
+  {name:'Lifestyle + Method',   day:'Day 5', desc:'Outcomes + the system',      openTarget:40},
+  {name:'Social Proof',         day:'Day 9', desc:'Rich & Zach client stories', openTarget:40},
+  {name:'Discovery Call Invite',day:'Day 14',desc:'Book a call CTA',            openTarget:40}
+];
+
+function blankEmailWeekData(){
+  return Array.from({length:4}, ()=>
+    Array.from({length:5}, ()=>({ sent:0, opens:0, clicks:0, booked:0, unsubs:0 }))
+  );
+}
+
+let emailWeekData = blankEmailWeekData();
+let currentEWWeek = 0;
+let ewPeriods = ['','','',''];
+
+function saveEmailWeekData(){
+  try{
+    localStorage.setItem('rrs_ce_ew', JSON.stringify({emailWeekData, ewPeriods}));
+    syncToSheet(); // push everything to sheet
+  }catch(e){}
+}
+function loadEmailWeekData(){
+  try{
+    const raw = localStorage.getItem('rrs_ce_ew');
+    if(raw){
+      const o = JSON.parse(raw);
+      if(o.emailWeekData) emailWeekData = o.emailWeekData;
+      if(o.ewPeriods) ewPeriods = o.ewPeriods;
+    }
+  }catch(e){}
+}
+
+function selectEmailWeek(i){
+  currentEWWeek = i;
+  document.querySelectorAll('.ew-week-btn').forEach(b => b.classList.toggle('active', +b.dataset.ew === i));
+  const pi = document.getElementById('ewPeriodInput');
+  if(pi) pi.value = ewPeriods[i] || '';
+  renderEWTable();
+}
+
+function renderEWTable(){
+  const tbody = document.getElementById('ewTableBody');
+  if(!tbody) return;
+  tbody.innerHTML = '';
+  const label = document.getElementById('ewWeekLabel');
+  if(label) label.textContent = `Week ${currentEWWeek+1}${ewPeriods[currentEWWeek]?' — '+ewPeriods[currentEWWeek]:''}`;
+
+  let tSent=0,tOpens=0,tClicks=0,tBooked=0,tUnsub=0;
+  EMAIL_NAMES.forEach((em,ei)=>{
+    const r = emailWeekData[currentEWWeek][ei];
+    const st = r.sent > 0 ? 'active' : 'none';
+    const oR  = pct(r.opens,  r.sent);
+    const ctr = pct(r.clicks, r.sent);
+    const uR  = pct(r.unsubs, r.sent);
+    if(r.sent>0){ tSent+=r.sent; tOpens+=r.opens; tClicks+=r.clicks; tBooked+=r.booked; tUnsub+=r.unsubs; }
+    const dash = '<span style="color:var(--faint);font-size:12px">—</span>';
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="left"><div class="em-day">${em.day}</div><div class="em-name">${em.name}</div><div class="em-desc">${em.desc}</div></td>
+      <td>${statusBadgeHtml(st)}</td>
+      ${ewCell(ei,'sent',r.sent)}${ewCell(ei,'opens',r.opens)}
+      <td>${st==='none'?dash:`<span class="rate ${statusOpen(oR,em.openTarget)}">${oR.toFixed(1)}%<small>≥${em.openTarget}%</small></span>`}</td>
+      ${ewCell(ei,'clicks',r.clicks)}
+      <td>${st==='none'?dash:`<span class="rate ${statusCtr(ctr)}">${ctr.toFixed(1)}%<small>≥5%</small></span>`}</td>
+      ${ewCell(ei,'booked',r.booked)}${ewCell(ei,'unsubs',r.unsubs)}
+      <td>${st==='none'?dash:`<span class="rate ${statusUnsub(uR)}">${uR.toFixed(1)}%<small>&lt;2%</small></span>`}</td>`;
+    tbody.appendChild(tr);
+  });
+
+  // Totals row
+  const aO=pct(tOpens,tSent),aC=pct(tClicks,tSent),aU=pct(tUnsub,tSent);
+  const tr=document.createElement('tr'); tr.className='totals';
+  tr.innerHTML=`
+    <td class="left"><div class="em-name" style="color:var(--gold)">Week Total / Avg</div></td>
+    <td></td>
+    <td>${fmt(tSent)}</td><td>${fmt(tOpens)}</td>
+    <td><span class="rate ${aO>=44?'good':aO>=37?'warn':'bad'}">${aO.toFixed(1)}%<small>avg</small></span></td>
+    <td>${fmt(tClicks)}</td>
+    <td><span class="rate ${statusCtr(aC)}">${aC.toFixed(1)}%<small>avg</small></span></td>
+    <td style="font-weight:700;color:var(--gold)">${fmt(tBooked)}</td>
+    <td>${fmt(tUnsub)}</td>
+    <td><span class="rate ${statusUnsub(aU)}">${aU.toFixed(1)}%<small>avg</small></span></td>`;
+  tbody.appendChild(tr);
+
+  bindEWInputs();
+  renderEWCompare();
+}
+
+function ewCell(ei, field, val){
+  return `<td><input class="cell ew-cell" type="number" min="0" data-ei="${ei}" data-ef="${field}" value="${val}"></td>`;
+}
+
+let ewBound = false;
+function bindEWInputs(){
+  if(ewBound) return;
+  const tableWrap = document.querySelector('#panel-emailreport .table-wrap');
+  if(!tableWrap) return;
+  tableWrap.addEventListener('change', e => {
+    const inp = e.target.closest('.ew-cell');
+    if(!inp) return;
+    let v = parseInt(inp.value, 10);
+    if(isNaN(v)||v<0) v=0;
+    inp.value = v;
+    const ei = +inp.dataset.ei, ef = inp.dataset.ef;
+    emailWeekData[currentEWWeek][ei][ef] = v;
+    saveEmailWeekData();
+    renderEWTable();
+    renderWeeklyInputTable(); // refresh auto-calc columns
+  });
+  ewBound = true;
+}
+
+function renderEWCompare(){
+  const section = document.getElementById('ewCompareSection');
+  const tbody = document.getElementById('ewCompareBody');
+  if(!section||!tbody) return;
+
+  // Check if at least 2 weeks have any data
+  const weeksWithData = emailWeekData.filter(wk => wk.some(e => e.sent > 0));
+  if(weeksWithData.length < 2){ section.style.display='none'; return; }
+  section.style.display='block';
+
+  const cl = document.getElementById('ewCompareLabel');
+  if(cl) cl.textContent = `open rate & CTR across all weeks`;
+
+  tbody.innerHTML = '';
+  EMAIL_NAMES.forEach((em,ei)=>{
+    const tr = document.createElement('tr');
+    let cells = `<td class="left"><div class="em-day">${em.day}</div><div class="em-name">${em.name}</div></td>`;
+    // Open rates W1-W4
+    [0,1,2,3].forEach(wi=>{
+      const r = emailWeekData[wi][ei];
+      const oR = pct(r.opens, r.sent);
+      cells += r.sent>0
+        ? `<td><span class="rate ${statusOpen(oR,em.openTarget)}" style="font-size:13px">${oR.toFixed(1)}%</span></td>`
+        : `<td><span style="color:var(--faint);font-size:12px">—</span></td>`;
+    });
+    // CTR W1-W4
+    [0,1,2,3].forEach(wi=>{
+      const r = emailWeekData[wi][ei];
+      const ctr = pct(r.clicks, r.sent);
+      cells += r.sent>0
+        ? `<td><span class="rate ${statusCtr(ctr)}" style="font-size:13px">${ctr.toFixed(1)}%</span></td>`
+        : `<td><span style="color:var(--faint);font-size:12px">—</span></td>`;
+    });
+    tr.innerHTML = cells;
+    tbody.appendChild(tr);
+  });
+}
+
+// Wire period input
+document.addEventListener('DOMContentLoaded', ()=>{
+  const pi = document.getElementById('ewPeriodInput');
+  if(pi) pi.addEventListener('change', ()=>{
+    ewPeriods[currentEWWeek] = pi.value;
+    saveEmailWeekData();
+    renderEWTable();
+  });
+});
+
+// ── INIT ──
+// 1. Load localStorage instantly (so UI isn't blank while sheet loads)
+loadWeekRows();
+loadEmailWeekData();
+render();
+renderWeeklyInputTable();
+renderFunnelWeeklyGrid();
+renderEWTable();
+
+// 2. Then load from Google Sheet and refresh (authoritative source)
+loadFromSheet().then(loaded => {
+  if(loaded){
+    renderWeeklyInputTable();
+    renderFunnelWeeklyGrid();
+    renderEWTable();
+    render();
+  } else if(!sheetsEnabled){
+    setSyncStatus('offline');
+  }
+});
+
+
+</script>
+</body>
+</html>
