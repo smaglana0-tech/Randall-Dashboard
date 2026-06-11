@@ -830,15 +830,36 @@ function renderEmailRates(){
 function renderEmailStrip(){
   const strip=document.getElementById('emailStrip');
   if(!strip) return;
-  let tSent=0,tOpens=0,tClicks=0,tUnsub=0;
-  data.emails.forEach(e=>{ tSent+=e.sent; tOpens+=e.opens; tClicks+=e.clicks; tUnsub+=e.unsubs; });
-  const aO=pct(tOpens,tSent),aC=pct(tClicks,tSent),aU=pct(tUnsub,tSent);
+
+  // Use latest week that has any email data from emailWeekData
+  let sourceEmails = null;
+  if(emailWeekData){
+    for(let wi=3; wi>=0; wi--){
+      if(emailWeekData[wi] && emailWeekData[wi].some(e=>e.sent>0)){
+        sourceEmails = emailWeekData[wi];
+        break;
+      }
+    }
+  }
+  // Fallback to data.emails if no emailWeekData entered yet
+  if(!sourceEmails) sourceEmails = data.emails;
+
+  let tSent=0,tOpens=0,tClicks=0,tUnsub=0,tBooked=0;
+  sourceEmails.forEach(e=>{
+    tSent  += +e.sent   || 0;
+    tOpens += +e.opens  || 0;
+    tClicks+= +e.clicks || 0;
+    tUnsub += +e.unsubs || 0;
+    tBooked+= +e.booked || 0;
+  });
+  const aO=pct(tOpens,tSent), aC=pct(tClicks,tSent), aU=pct(tUnsub,tSent);
   strip.innerHTML=`
     <div class="stat-item"><div class="stat-label">Emails Delivered</div><div class="stat-val">${fmt(tSent)}</div></div>
     <div class="stat-item"><div class="stat-label">Total Opens</div><div class="stat-val">${fmt(tOpens)}</div></div>
     <div class="stat-item"><div class="stat-label">Avg Open Rate</div><div class="stat-val" style="color:${aO>=44?'var(--green)':aO>=37?'var(--amber)':'var(--red)'}">${aO.toFixed(1)}<span class="u">%</span></div></div>
     <div class="stat-item"><div class="stat-label">Total Clicks</div><div class="stat-val">${fmt(tClicks)}</div></div>
     <div class="stat-item"><div class="stat-label">Avg CTR</div><div class="stat-val" style="color:${aC>=5?'var(--green)':aC>=3?'var(--amber)':'var(--red)'}">${aC.toFixed(1)}<span class="u">%</span></div></div>
+    <div class="stat-item"><div class="stat-label">Calls Booked</div><div class="stat-val" style="color:var(--gold)">${fmt(tBooked)}</div></div>
     <div class="stat-item"><div class="stat-label">Total Unsubs</div><div class="stat-val" style="color:${aU<2?'var(--green)':aU<=3?'var(--amber)':'var(--red)'}">${fmt(tUnsub)}</div></div>`;
 }
 
@@ -1409,7 +1430,8 @@ function bindEWInputs(){
     emailWeekData[currentEWWeek][ei][ef] = v;
     saveEmailWeekData();
     renderEWTable();
-    renderWeeklyInputTable(); // refresh auto-calc columns
+    renderWeeklyInputTable();
+    renderEmailStrip(); // keep overview summary in sync
   });
   ewBound = true;
 }
